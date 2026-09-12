@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta name="theme-color" content="#e5004a">
+<title>秋田プレミアムチケット 加盟店マップ｜使えるお店を地図で探す</title>
+<meta name="description" content="秋田県プレミアムチケット（プレミアム付き商品券）が使える加盟店3,804店を地図で探せます。現在地から近い順、業種・市町村での絞り込みに対応。">
+<meta name="keywords" content="秋田プレミアムチケット,加盟店,使える店,地図,マップ,プレミアム付き商品券,秋田県">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="秋田チケットMAP">
+<!-- SEO:START 以下は tools/build_pages.py が公開URLに合わせて書き換えます -->
+<link rel="canonical" href="https://oyuaki.github.io/akita-premium-ticket-map/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="秋田プレミアムチケット 加盟店マップ">
+<meta property="og:title" content="秋田プレミアムチケット 加盟店マップ｜使えるお店を地図で探す">
+<meta property="og:description" content="秋田県プレミアムチケット（プレミアム付き商品券）が使える加盟店3,804店を地図で探せます。現在地から近い順、業種・市町村での絞り込みに対応。">
+<meta property="og:url" content="https://oyuaki.github.io/akita-premium-ticket-map/">
+<meta property="og:image" content="https://oyuaki.github.io/akita-premium-ticket-map/ogp.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "秋田プレミアムチケット 加盟店マップ", "url": "https://oyuaki.github.io/akita-premium-ticket-map/", "description": "秋田県プレミアムチケット（プレミアム付き商品券）が使える加盟店3,804店を地図で探せます。現在地から近い順、業種・市町村での絞り込みに対応。", "applicationCategory": "TravelApplication", "operatingSystem": "Web", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}, "about": {"@type": "Thing", "name": "秋田県プレミアムチケット"}}</script>
+<!-- SEO:END -->
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="vendor/MarkerCluster.css">
+<link rel="stylesheet" href="vendor/MarkerCluster.Default.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<div id="map" role="application" aria-label="加盟店マップ"></div>
+
+<!-- ===== 上部の検索バー ===== -->
+<header class="topbar">
+  <div class="searchwrap">
+    <svg class="ico-search" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="店名・住所で検索" autocomplete="off"
+           enterkeyhint="search" aria-label="店名・住所で検索">
+    <button id="qclear" class="qclear" type="button" aria-label="検索条件をクリア" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <button id="filterBtn" class="filterbtn" type="button" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>
+    <span>絞り込み</span>
+    <span id="filterCount" class="badge" hidden>0</span>
+  </button>
+</header>
+
+<!-- ===== 地図右下のボタン群 ===== -->
+<div class="mapctl">
+  <button id="btnLocate" class="mbtn" type="button" aria-label="現在地を表示" title="現在地">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>
+  </button>
+  <button id="btnLayer" class="mbtn" type="button" aria-label="地図と航空写真を切り替え" title="地図 / 航空写真">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3.5 12.5L12 17l8.5-4.5"/></svg>
+  </button>
+  <button id="btnInfo" class="mbtn" type="button" aria-label="このサイトについて" title="このサイトについて">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.8v.01" stroke-width="2.6"/></svg>
+  </button>
+</div>
+
+<!-- ===== 下部のシート（一覧 / 詳細） ===== -->
+<section id="sheet" class="sheet" data-snap="peek" aria-label="加盟店一覧">
+  <div id="grab" class="grab" role="button" tabindex="0" aria-label="一覧を開閉">
+    <span class="grabline"></span>
+  </div>
+
+  <div class="sheethead">
+    <div class="counts">
+      <strong id="hitCount">—</strong><span class="unit">件</span>
+      <span id="scopeNote" class="scopenote">この地図の範囲</span>
+    </div>
+    <button id="btnAll" class="allbtn" type="button" hidden></button>
+  </div>
+
+  <div id="chipbar" class="chipbar" hidden></div>
+
+  <div id="list" class="list" tabindex="-1"></div>
+</section>
+
+<!-- ===== 店舗詳細 ===== -->
+<div id="detail" class="detail" role="dialog" aria-modal="false" aria-label="店舗の詳細" hidden></div>
+
+<!-- ===== 絞り込みパネル ===== -->
+<div id="filterPane" class="pane" role="dialog" aria-modal="true" aria-label="絞り込み" hidden>
+  <div class="pane-backdrop" data-close></div>
+  <div class="pane-body">
+    <div class="pane-head">
+      <h2>絞り込み</h2>
+      <button class="pane-x" type="button" data-close aria-label="閉じる">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="pane-scroll">
+      <fieldset class="fs">
+        <legend>チケットの種類</legend>
+        <div id="fTicket" class="chips"></div>
+      </fieldset>
+      <fieldset class="fs">
+        <legend>業種 <button class="mini" type="button" data-clear="sector">すべて解除</button></legend>
+        <div id="fSector" class="chips"></div>
+      </fieldset>
+      <fieldset class="fs">
+        <legend>市町村 <button class="mini" type="button" data-clear="city">すべて解除</button></legend>
+        <div id="fCity" class="chips"></div>
+      </fieldset>
+    </div>
+    <div class="pane-foot">
+      <button class="btn ghost" type="button" id="fReset">条件をリセット</button>
+      <button class="btn solid" type="button" data-close><span id="fApply">結果を見る</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== このサイトについて ===== -->
+<div id="infoPane" class="pane" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+  <div class="pane-backdrop" data-close></div>
+  <div class="pane-body">
+    <div class="pane-head">
+      <h2 id="infoTitle">このサイトについて</h2>
+      <button class="pane-x" type="button" data-close aria-label="閉じる">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="pane-scroll prose">
+      <p><strong>秋田県プレミアムチケット</strong>が使える加盟店を地図から探せる非公式のマップです。
+         公式サイトの加盟店一覧をもとに、住所から地図上の位置を割り出して表示しています。</p>
+
+      <h3>データについて</h3>
+      <ul>
+        <li>掲載件数：<strong id="infoCount">—</strong>店舗</li>
+        <li>データ取得日：<strong id="infoDate">—</strong></li>
+        <li>出典：<a href="https://akita-premium2026.jp/shop/" target="_blank" rel="noopener">秋田県プレミアムチケット 公式サイト 加盟店一覧</a></li>
+      </ul>
+
+      <h3>地図上の位置について</h3>
+      <p class="warn"><strong>場所は結構ずれていることがあります。あくまで参考程度にご覧ください。</strong>
+         お出かけの前に「経路を調べる」や公式サイトで確認をおすすめします。</p>
+      <p>位置は住所をもとに<a href="https://msearch.gsi.go.jp/" target="_blank" rel="noopener">国土地理院の地名検索</a>で自動的に割り出したものです。
+         うち<strong id="infoApprox">—</strong>店舗は番地までの情報が無く、町名のおおよその場所に置いています。</p>
+      <p>同じ番地に複数の店舗がある場合は1つのピンにまとめ、件数を数字で表示しています。
+         タップすると業種ごとの内訳が開きます。</p>
+
+      <h3>市町村ごとの一覧</h3>
+      <p>地図を使わずに、文字の一覧から探すこともできます。<br>
+         <a href="shops/">市町村から加盟店を探す</a></p>
+
+      <h3>ご連絡</h3>
+      <p class="contact"><a id="contactLink" href="#" rel="nofollow noopener">（メールアドレスを読み込み中）</a></p>
+
+      <h3>ご注意</h3>
+      <p>最新の加盟状況・営業状況は<a href="https://akita-premium2026.jp/shop/" target="_blank" rel="noopener">公式サイト</a>でご確認ください。
+         加盟店は随時追加・変更されるため、このマップの内容が古くなっている場合があります。</p>
+      <p class="fine">地図：&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors ／
+         航空写真：<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>（国土地理院）／
+         Leaflet・Leaflet.markercluster を利用しています。</p>
+    </div>
+    <div class="pane-foot one">
+      <button class="btn solid" type="button" data-close>閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<noscript>
+  <div class="nojs">
+    <h1>秋田プレミアムチケット 加盟店マップ</h1>
+    <p>地図を表示するにはJavaScriptを有効にしてください。</p>
+    <p>市町村ごとの加盟店一覧は、JavaScriptなしでもご覧いただけます。</p>
+    <p><a href="shops/">市町村から加盟店を探す</a></p>
+  </div>
+</noscript>
+
+<script src="vendor/leaflet.js"></script>
+<script src="vendor/leaflet.markercluster.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

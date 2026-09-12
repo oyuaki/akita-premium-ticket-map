@@ -1,0 +1,109 @@
+/* 市町村ごとの加盟店一覧ページ用 */
+
+:root {
+  --brand: #e5004a;
+  --ink: #16161c;
+  --ink-2: #55555f;
+  --ink-3: #8a8a96;
+  --line: #e3e3e9;
+  --surface: #f5f5f7;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0 auto;
+  max-width: 760px;
+  padding: 0 18px 56px;
+  background: #fff;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+               "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--brand); }
+
+.crumb {
+  padding: 14px 0 4px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.crumb a { color: var(--ink-2); text-decoration: none; }
+
+.hd { padding: 6px 0 20px; border-bottom: 1px solid var(--line); }
+h1 { margin: 6px 0 10px; font-size: 23px; line-height: 1.35; letter-spacing: -.01em; }
+.lead { margin: 0 0 16px; color: var(--ink-2); font-size: 14.5px; }
+.lead strong { color: var(--ink); }
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.toc { margin: 20px 0 8px; padding: 14px 16px; background: var(--surface); border-radius: 12px; }
+.toc b { font-size: 12.5px; color: var(--ink-3); letter-spacing: .04em; }
+.toc ul { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 8px 0 0; padding: 0; list-style: none; }
+.toc li { font-size: 13.5px; }
+
+h2 {
+  margin: 30px 0 2px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--brand);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+ul.shops { margin: 0; padding: 0; list-style: none; }
+ul.shops li { padding: 12px 2px; border-bottom: 1px solid var(--line); }
+ul.shops .n { font-weight: 600; font-size: 15px; line-height: 1.45; }
+ul.shops .a { color: var(--ink-2); font-size: 13px; }
+ul.shops .m { font-size: 13px; }
+ul.shops .m a { margin-right: 12px; }
+.ext { color: var(--ink-2); }
+
+.tk {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+.tk.p { background: #ececed; color: var(--ink-2); }
+.tk.e { background: #dff3ea; color: #0b6b4f; }
+
+ul.cities { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+ul.cities a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+ul.cities .c { font-weight: 600; }
+ul.cities .n { color: var(--ink-3); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+.others { margin: 34px 0 0; padding: 16px 18px; background: var(--surface); border-radius: 12px; }
+.others b { font-size: 12.5px; color: var(--ink-3); letter-spacing: .04em; }
+.others ul { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+
+.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.foot p { margin: 0 0 8px; }
+.foot .fine { color: var(--ink-3); font-size: 12px; line-height: 1.7; }

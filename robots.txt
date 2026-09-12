@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://oyuaki.github.io/akita-premium-ticket-map/sitemap.xml
