@@ -9,10 +9,9 @@
 const F = { NAME: 0, CITY: 1, ADDR: 2, TEL: 3, URL: 4, SEC: 5, TK: 6, LAT: 7, LNG: 8, PREC: 9 };
 
 const AKITA = { center: [39.72, 140.35], zoom: 9 };
-// 加盟店の4割が秋田市にあるため、起動時の表示は少し秋田市寄りにする
 const CITY_CENTER = [39.7186, 140.1024];
-const CITY_BIAS = 0.4;
-const ICON_ZOOM = 16;   // このズーム以上では店ごとのアイコンを出す
+const CITY_ZOOM = 11;
+const ICON_ZOOM = 16; 
 
 const BASEMAPS = [
   {
@@ -104,13 +103,9 @@ function boot() {
   if (!location.hash) biasToCity();
 }
 
-// 県全体が収まったまま、中心だけ秋田市の方へ寄せる
+// 起動時は、加盟店が集中する秋田市周辺を映す
 function biasToCity() {
-  const c = map.getCenter();
-  map.setView([
-    c.lat + (CITY_CENTER[0] - c.lat) * CITY_BIAS,
-    c.lng + (CITY_CENTER[1] - c.lng) * CITY_BIAS,
-  ], map.getZoom(), { animate: false });
+  map.setView(CITY_CENTER, CITY_ZOOM, { animate: false });
 }
 
 /* ---------------------------------------------------------
